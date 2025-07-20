@@ -15,7 +15,15 @@ export default withIronSessionApiRoute(
           try {
             // const bookData = req.body
             console.log({"(post) Book info: ": req.body})
-            const newBook = await db.book.add(req.body)
+            const userId = req.session.user.id
+            //const bookId = req.body.googleId
+            const book = req.body
+            
+            console.log(userId)
+            //console.log(bookId)
+            console.log(book)
+
+            const newBook = await db.book.add(userId, book)
             
             if (!newBook) {
               req.session.destroy()
@@ -31,11 +39,17 @@ export default withIronSessionApiRoute(
         case "DELETE":
           try {
             // const bookData = req.body
-            console.log({"(delete) Book info: ": req.body })
-            const deletedBook = await db.book.remove(req.body)
+            const userId = req.session.user.id
+            //const bookId = req.body.googleId
+            const book = req.body.id
+
+            console.log({ userId, book})
+            
+            const deletedBook = await db.book.remove(userId, book)
 
             if (!deletedBook) {
-              return res.status(401).json({ error: error.message })
+              req.session.destroy()
+              return res.status(401).json({ message: "Book not found." })
             } 
 
             return res.status(200).json({ message: "Book has been removed." })
