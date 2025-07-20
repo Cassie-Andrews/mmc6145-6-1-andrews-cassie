@@ -8,13 +8,13 @@ export default withIronSessionApiRoute(
 
     if (!req.session.user) {
       return res.status(401).json({message: "Not logged in"})
-    } else {
+    }
       switch (req.method) {
         // TODO: On a POST request, add a book using db.book.add with request body 
         case "POST":
           try {
-            const bookData = ({ req, res })
-            console.log({"Book info: ": bookData})
+            // const bookData = req.body
+            console.log({"(post) Book info: ": req.body})
             const newBook = await db.book.add(req.body)
             
             if (!newBook) {
@@ -30,8 +30,8 @@ export default withIronSessionApiRoute(
         // TODO: On a DELETE request, remove a book using db.book.remove with request body 
         case "DELETE":
           try {
-            const bookData = ({ req, res })
-            console.log({"Book info: ": bookData})
+            // const bookData = req.body
+            console.log({"(delete) Book info: ": req.body })
             const deletedBook = await db.book.remove(req.body)
 
             if (!deletedBook) {
@@ -43,7 +43,6 @@ export default withIronSessionApiRoute(
           } catch (error) {
             return res.status(400).json({ error: error.message })
           }
-    }
 
   }
     // TODO: Respond with 404 for all other requests
