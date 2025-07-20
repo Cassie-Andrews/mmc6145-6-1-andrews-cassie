@@ -5,8 +5,47 @@ import db from '../../db'
 // this handler runs for /api/book with any request method (GET, POST, etc)
 export default withIronSessionApiRoute(
   async function handler(req, res) {
-    // TODO: On a POST request, add a book using db.book.add with request body 
-    // TODO: On a DELETE request, remove a book using db.book.remove with request body 
+
+    if (!req.session.user) {
+      return res.status(401).json({message: "Not logged in"})
+    } else {
+      switch (req.method) {
+        // TODO: On a POST request, add a book using db.book.add with request body 
+        case "POST":
+          try {
+            const bookData = ({ req, res })
+            console.log({"Book info: ": bookData})
+            const newBook = await db.book.add(req.body)
+            
+            if (!newBook) {
+              req.session.destroy()
+              return res.status(401).json({ message: "Book not found." })
+            }
+
+            return res.status(200).json({ message: "A new book has been added." })
+          } catch (error) {
+            return res.status(400).json({ error: error.message })
+          }
+      
+        // TODO: On a DELETE request, remove a book using db.book.remove with request body 
+        case "DELETE":
+          try {
+            const bookData = ({ req, res })
+            console.log({"Book info: ": bookData})
+            const deletedBook = await db.book.remove(req.body)
+
+            if (!deletedBook) {
+              return res.status(401).json({ error: error.message })
+            } 
+
+            return res.status(200).json({ message: "Book has been removed." })
+
+          } catch (error) {
+            return res.status(400).json({ error: error.message })
+          }
+    }
+
+  }
     // TODO: Respond with 404 for all other requests
     // User info can be accessed with req.session
     // No user info on the session means the user is not logged in
